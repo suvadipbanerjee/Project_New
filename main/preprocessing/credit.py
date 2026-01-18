@@ -18,7 +18,7 @@ for col in numeric_cols:
     df[col].fillna(df[col].median(), inplace=True)
 
 df = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
-df['default'] = df['default'].apply(lambda x: 1 if str(x).strip().lower() == 'yes' else 0)
+df['default'] = df['default'].apply(lambda x: 1 if str(x).strip().lower() == '1' else 0)
 
 X = df.drop('default', axis=1)
 y = df['default']

@@ -1,5 +1,30 @@
-seeds: [1,2,3,4,5,10,20,30,42,99]
+datasets:
+  abalone:
+    task: regression
+  winequality:
+    task: regression
+  diabetes:
+    task: regression
+
+  adult:
+    task: classification
+  bank_marketing:
+    task: classification
+  breast_cancer:
+    task: classification
+  credit:
+    task: classification
+  heart:
+    task: classification
+  ionosphere:
+    task: classification
+  sonar:
+    task: classification
+
 test_size: 0.2
+single_seed: 42
+multi_seeds: 50
 cv_folds: 5
-repeats: 10
-metrics: [accuracy, f1, auc]
+cv_repeats: 10
+
+
