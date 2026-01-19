@@ -16,7 +16,6 @@ DATA_DIR = "../data/processed"
 CONFIG_PATH = "../configs/experiment.yaml"
 RESULTS_DIR = "../results/tables"
 
-
 with open(CONFIG_PATH, "r") as f:
     config = yaml.safe_load(f)
 
@@ -26,10 +25,14 @@ cv_repeats = config["cv_repeats"]
 
 CLASSIFICATION_MODEL = LogisticRegression(
     max_iter=1000,
-    solver="liblinear"
+    solver="liblinear",
+    random_state=42
 )
 
 REGRESSION_MODEL = LinearRegression()
+
+CLASSIFICATION_MODEL_NAME = "LogisticRegression"
+REGRESSION_MODEL_NAME = "LinearRegression"
 
 results = []
 
@@ -38,8 +41,8 @@ for dataset_name, dataset_info in datasets.items():
 
     print(f"\nRunning repeated CV for: {dataset_name} ({task})")
 
-    X = pd.read_csv(DATA_DIR + f"/{dataset_name}_features.csv")
-    y = pd.read_csv(DATA_DIR + f"/{dataset_name}_target.csv").squeeze()
+    X = pd.read_csv(f"{DATA_DIR}/{dataset_name}_features.csv")
+    y = pd.read_csv(f"{DATA_DIR}/{dataset_name}_target.csv").squeeze()
 
     if task == "classification":
         cv = RepeatedStratifiedKFold(
@@ -48,14 +51,16 @@ for dataset_name, dataset_info in datasets.items():
             random_state=42
         )
         model = CLASSIFICATION_MODEL
+        model_name = CLASSIFICATION_MODEL_NAME
 
-    else:  
+    else:
         cv = RepeatedKFold(
             n_splits=cv_folds,
             n_repeats=cv_repeats,
             random_state=42
         )
         model = REGRESSION_MODEL
+        model_name = REGRESSION_MODEL_NAME
 
     fold_idx = 0
 
@@ -76,6 +81,7 @@ for dataset_name, dataset_info in datasets.items():
             results.append({
                 "dataset": dataset_name,
                 "task": task,
+                "model": model_name,
                 "fold": fold_idx,
                 "accuracy": acc,
                 "f1": f1,
@@ -89,15 +95,16 @@ for dataset_name, dataset_info in datasets.items():
             results.append({
                 "dataset": dataset_name,
                 "task": task,
+                "model": model_name,
                 "fold": fold_idx,
                 "mse": mse,
                 "r2": r2
             })
 
-
 results_df = pd.DataFrame(results)
-output_path = RESULTS_DIR + "/repeated_cv_results.csv"
+output_path = f"{RESULTS_DIR}/repeated_cv_results.csv"
 results_df.to_csv(output_path, index=False)
 
-print("\nRepeated cross-validation completed.")
+print("\nRepeated cross-validation completed successfully.")
 print(f"Results saved to: {output_path}")
+
